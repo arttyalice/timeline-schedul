@@ -54,12 +54,33 @@
                     <div class="t-right-date flex-div">
                         <div class="t-month" v-for="(month, index) in months" :key="index"></div>
                         <div
-                            v-if="calOverdueDay(activity) > 0 && activityOverDueStatus[index]"
                             class="t-task-bar t-task-overdue popup" 
                             v-bind:style="{width: calTaskOverdueEnd(activity.startDate, activity.endDate)+'%', left: progressStart(activity.startDate)+'%' }"
                             v-on:mouseover="mouseOverActivity(activity._id)"
                             v-on:mouseleave="mouseExitActivity"
                         >
+                            <span 
+                                class="popuptext" id="myPopup" 
+                                v-if="mouseOverActivityShow && activeActivity === activity._id && calOverdueDay(activity) > 0"
+                            >
+                                <div>
+                                    <h3>{{activity.name}}</h3>
+                                </div>
+                                <div class="total-popup flex-div">
+                                        <div class="flex-div" v-if="calTotalDay(activity) > 0">
+                                           <div class="color-cicle r-progress"></div> Total: {{calTotalDay(activity)}} days
+                                        </div>
+                                        <div class="flex-div" v-else>
+                                           <div class="color-cicle r-progress"></div> Day left: {{calTotalDay(activity) / -1}} days
+                                        </div>
+                                    </div>
+                                <div class="remain-popup flex-div" v-if="calDay(activity.endDate) > calDay(new Date())">
+                                    <div class="color-cicle r-remain"></div>Remain: {{calDayRemain(activity.endDate)}} days
+                                </div>
+                                <div class="overdue-popup flex-div" v-if="calOverdueDay(activity) > 0 && !activity.status">
+                                    <div class="color-cicle r-overdue"></div>Overdue: {{calOverdueDay(activity)}} days
+                                </div>
+                            </span>
                         </div>
 
                         <div 
@@ -69,27 +90,27 @@
                             v-on:mouseleave="mouseExitActivity"
                         >
                             <span 
-                                    class="popuptext" id="myPopup" 
-                                    v-if="mouseOverActivityShow && activeActivity === activity._id"
+                                class="popuptext" id="myPopup" 
+                                v-if="mouseOverActivityShow && activeActivity === activity._id && calOverdueDay(activity) < 0 && calDay(activity.endDate) > calDay(new Date())"
                             >
-                                    <div>
-                                        <h3>{{activity.name}}</h3>
-                                    </div>
-                                    <div class="total-popup">
-                                        <div v-if="calTotalDay(activity) > 0">
-                                           Total: {{calTotalDay(activity)}} days
+                                <div>
+                                    <h3>{{activity.name}}</h3>
+                                </div>
+                                <div class="total-popup flex-div">
+                                        <div class="flex-div" v-if="calTotalDay(activity) > 0">
+                                           <div class="color-cicle r-progress"></div> Total: {{calTotalDay(activity)}} days
                                         </div>
-                                        <div v-else>
-                                            Day left: {{calTotalDay(activity) / -1}} days
+                                        <div class="flex-div" v-else>
+                                           <div class="color-cicle r-progress"></div> Day left: {{calTotalDay(activity) / -1}} days
                                         </div>
                                     </div>
-                                    <div class="remain-popup" v-if="calDay(activity.endDate) > calDay(new Date())">
-                                        Remain: {{calDayRemain(activity.endDate)}} days
-                                    </div>
-                                    <div class="overdue-popup" v-if="calOverdueDay(activity) > 0 && !activity.status">
-                                        Overdue: {{calOverdueDay(activity)}} days
-                                    </div>
-                                </span>
+                                <div class="remain-popup flex-div" v-if="calDay(activity.endDate) > calDay(new Date())">
+                                    <div class="color-cicle r-remain"></div>Remain: {{calDayRemain(activity.endDate)}} days
+                                </div>
+                                <div class="overdue-popup flex-div" v-if="calOverdueDay(activity) > 0 && !activity.status">
+                                    <div class="color-cicle r-overdue"></div>Overdue: {{calOverdueDay(activity)}} days
+                                </div>
+                            </span>
                         </div>
                         
                         <div 
@@ -99,6 +120,28 @@
                             v-on:mouseleave="mouseExitActivity"
                             v-bind:style="{width: calLaterEnd(activity)+'%', left: calCurrentDay+'%'}"
                         >
+                            <span 
+                                class="popuptext" id="myPopup" 
+                                v-if="mouseOverActivityShow && activeActivity === activity._id && calOverdueDay(activity) < 0 && calDay(activity.endDate) < calDay(new Date())"
+                            >
+                                <div>
+                                    <h3>{{activity.name}}</h3>
+                                </div>
+                                <div class="total-popup flex-div">
+                                        <div class="flex-div" v-if="calTotalDay(activity) > 0">
+                                           <div class="color-cicle r-progress"></div> Total: {{calTotalDay(activity)}} days
+                                        </div>
+                                        <div class="flex-div" v-else>
+                                           <div class="color-cicle r-progress"></div> Day left: {{calTotalDay(activity) / -1}} days
+                                        </div>
+                                    </div>
+                                <div class="remain-popup flex-div" v-if="calDay(activity.endDate) > calDay(new Date())">
+                                    <div class="color-cicle r-remain"></div>Remain: {{calDayRemain(activity.endDate)}} days
+                                </div>
+                                <div class="overdue-popup flex-div" v-if="calOverdueDay(activity) > 0 && !activity.status">
+                                    <div class="color-cicle r-overdue"></div>Overdue: {{calOverdueDay(activity)}} days
+                                </div>
+                            </span>
                         </div>
 
                         <div
@@ -159,6 +202,28 @@
                                 v-on:mouseover="mouseOverTask(task._id)"
                                 v-on:mouseleave="mouseExitTask"
                             >
+                                <span 
+                                    class="popuptext" id="myPopup" 
+                                    v-if="mouseOverTaskShow && activeTask === task._id && calOverdueDay(task) < 0 && calDay(activity.endDate) > calDay(new Date())"
+                                >
+                                    <div>
+                                        <h3>{{task.name}}</h3>
+                                    </div>
+                                    <div class="total-popup flex-div">
+                                        <div class="flex-div" v-if="calTotalDay(task) > 0">
+                                           <div class="color-cicle r-progress"></div> Total: {{calTotalDay(task)}} days
+                                        </div>
+                                        <div class="flex-div" v-else>
+                                           <div class="color-cicle r-progress"></div> Day left: {{calTotalDay(task) / -1}} days
+                                        </div>
+                                    </div>
+                                    <div class="remain-popup flex-div" v-if="calDay(task.endDate) > calDay(new Date())">
+                                        <div class="color-cicle r-remain"></div>Remain: {{calDayRemain(task.endDate)}} days
+                                    </div>
+                                    <div class="overdue-popup flex-div" v-if="calOverdueDay(task) > 0 && !task.status">
+                                        <div class="color-cicle r-overdue"></div>Overdue: {{calOverdueDay(task)}} days
+                                    </div>
+                                </span>
                             </div>
 
                             <div 
@@ -170,7 +235,7 @@
                             >
                                 <span 
                                     class="popuptext" id="myPopup" 
-                                    v-if="mouseOverTaskShow && activeTask === task._id && calOverdueDay(task) < 0"
+                                    v-if="mouseOverTaskShow && activeTask === task._id && calOverdueDay(task) < 0 && calDay(activity.endDate) < calDay(new Date())"
                                 >
                                     <div>
                                         <h3>{{task.name}}</h3>
@@ -448,6 +513,8 @@
     $currentdate: rgb(110, 173, 255);
     $remainTask: rgb(209, 209, 209);
     $popupBg: rgba(235, 235, 235, 0.815);
+    $shadow: rgba(3, 3, 3, 0.527);
+    $arrow: rgba(3, 3, 3, 0.300);
 
     html, body {
         margin: 0;
@@ -607,13 +674,15 @@
                 -ms-user-select: none;
                 user-select: none;
                 border-radius: 15px;
+            
                 .popuptext {
                     overflow: visible;
                     width: 160px;
                     background-color: $popupBg;
                     color: rgb(92, 92, 92);
                     text-align: center;
-                    box-shadow:0px 0px 5px rgba(3, 3, 3, 0.527);
+                    border: rgba(3, 3, 3, 0.527) solid 0.1px;
+                    box-shadow:0px 0px 5px $shadow;
                     border-radius: 6px;
                     padding: 8px 0;
                     position: absolute;
@@ -630,7 +699,7 @@
                         margin-left: -5px;
                         border-width: 5px;
                         border-style: solid;
-                        border-color: $popupBg transparent transparent transparent;
+                        border-color: $arrow transparent transparent transparent;
                     }
 
                     .color-cicle {
@@ -696,24 +765,24 @@
     }
 
     .color-cicle {
-            width: 10px;
-            height: 10px;
-            border-radius: 100%;
-            transform: translateY(56%);
-            margin: 0 .2rem;
+        width: 10px;
+        height: 10px;
+        border-radius: 100%;
+        transform: translateY(56%);
+        margin: 0 .2rem;
 
-            &.r-currentdate {
-                background-color: $currentdate;
-            }
-            &.r-progress {
-                background-color: $progress-bar;
-            }
-            &.r-overdue {
-                background-color: $overdue-bar;
-            }
-            &.r-remain {
-                background-color: $remainTask;
-            }
+        &.r-currentdate {
+            background-color: $currentdate;
+        }
+        &.r-progress {
+            background-color: $progress-bar;
+        }
+        &.r-overdue {
+            background-color: $overdue-bar;
+        }
+        &.r-remain {
+            background-color: $remainTask;
+        }
         }
 
     .flex-div {

@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
-    "dev-host": "cross-env NODE_ENV=development webpack-dev-server --open --hot --host 192.168.0.103",
+    "dev-host": "cross-env NODE_ENV=development webpack-dev-server --open --hot --host 10.0.1.198",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
