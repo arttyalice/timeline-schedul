@@ -27,18 +27,18 @@
                         <div class="t-left-task activity-name">
                             <div class="activity-group flex-div" v-on:click="showCollapseTask(activity._id, index)">
                                 <div class="task-collapse collapse-symbol">
-                                    <h3 
+                                    <h3
                                         v-if="collapseShow[index]"
-                                        style=" transform: translateY(-0%); 
+                                        style=" transform: translateY(-0%);
                                                 -webkit-transform: translateY(-0%);
                                                 -moz-transform: translateY(-0%);
                                                 -o-transform: translateY(-0%);
                                                 -ms-transform: translateY(-0%);
                                                 font-size: 25px"
                                     >-</h3>
-                                    <h3 
+                                    <h3
                                         v-else
-                                        style=" transform: translateY(-2%); 
+                                        style=" transform: translateY(-2%);
                                                 -webkit-transform: translateY(-2%);
                                                 -moz-transform: translateY(-2%);
                                                 -o-transform: translateY(-2%);
@@ -54,13 +54,13 @@
                     <div class="t-right-date flex-div">
                         <div class="t-month" v-for="(month, index) in months" :key="index"></div>
                         <div
-                            class="t-task-bar t-task-overdue popup" 
+                            class="t-task-bar t-task-overdue popup"
                             v-bind:style="{width: calTaskOverdueEnd(activity.startDate, activity.endDate)+'%', left: progressStart(activity.startDate)+'%' }"
                             v-on:mouseover="mouseOverActivity(activity._id)"
                             v-on:mouseleave="mouseExitActivity"
                         >
-                            <span 
-                                class="popuptext" id="myPopup" 
+                            <span
+                                class="popuptext" id="myPopup" v-bind:style="stylePopup"
                                 v-if="mouseOverActivityShow && activeActivity === activity._id && calOverdueDay(activity) > 0"
                             >
                                 <div>
@@ -83,14 +83,14 @@
                             </span>
                         </div>
 
-                        <div 
+                        <div
                             class="t-task-bar t-task-progress popup"
                             v-bind:style="{ width: progressEnd(activity.startDate, activity.endDate)+'%',left: progressStart(activity.startDate)+'%' }"
                             v-on:mouseover="mouseOverActivity(activity._id)"
                             v-on:mouseleave="mouseExitActivity"
                         >
-                            <span 
-                                class="popuptext" id="myPopup" 
+                            <span
+                                class="popuptext" id="myPopup"
                                 v-if="mouseOverActivityShow && activeActivity === activity._id && calOverdueDay(activity) < 0 && calDay(activity.endDate) > calDay(new Date())"
                             >
                                 <div>
@@ -112,16 +112,16 @@
                                 </div>
                             </span>
                         </div>
-                        
-                        <div 
-                            class="t-task-bar t-remain-progress popup" 
+
+                        <div
+                            class="t-task-bar t-remain-progress popup"
                             v-if="calDay(activity.endDate) > calDay(new Date())"
                             v-on:mouseover="mouseOverActivity(activity._id)"
                             v-on:mouseleave="mouseExitActivity"
                             v-bind:style="{width: calLaterEnd(activity)+'%', left: calCurrentDay+'%'}"
                         >
-                            <span 
-                                class="popuptext" id="myPopup" 
+                            <span
+                                class="popuptext" id="myPopup"
                                 v-if="mouseOverActivityShow && activeActivity === activity._id && calOverdueDay(activity) < 0 && calDay(activity.endDate) < calDay(new Date())"
                             >
                                 <div>
@@ -145,14 +145,14 @@
                         </div>
 
                         <div
-                            class="t-current-date" 
+                            class="t-current-date"
                             v-bind:style="{left: calCurrentDay+'%'}"
                         >
                         </div>
                     </div>
                 </div>
 
-                <div 
+                <div
                     v-show="collapseShow[index]"
                     class="t-body flex-div"
                     v-for="task in tasks" :key="task.id"
@@ -167,13 +167,13 @@
                         <div class="t-right-date flex-div">
                             <div class="t-month" v-for="(month, index) in months" :key="index"></div>
                             <div
-                                class="t-task-bar t-task-overdue popup" 
+                                class="t-task-bar t-task-overdue popup"
                                 v-bind:style="{width: calTaskOverdueEnd(task.startDate)+'%', left: progressStart(task.startDate)+'%'}"
                                 v-on:mouseover="mouseOverTask(task._id)"
-                                v-on:mouseleave="mouseExitTask"
+                                v-on:mouseleave="[mouseExitTask]"
                             >
-                                <span 
-                                    class="popuptext" id="myPopup" 
+                                <span
+                                    class="popuptext" id="myPopup"
                                     v-if="mouseOverTaskShow && activeTask === task._id && calOverdueDay(task) > 0"
                                 >
                                     <div>
@@ -195,15 +195,15 @@
                                     </div>
                                 </span>
                             </div>
-                            
-                            <div 
-                                class="t-task-bar t-task-progress popup" 
+
+                            <div
+                                class="t-task-bar t-task-progress popup"
                                 v-bind:style="[{width: progressEnd(task.startDate, task.endDate)+'%', left: progressStart(task.startDate)+'%'}]"
                                 v-on:mouseover="mouseOverTask(task._id)"
                                 v-on:mouseleave="mouseExitTask"
                             >
-                                <span 
-                                    class="popuptext" id="myPopup" 
+                                <span
+                                    class="popuptext" id="myPopup"
                                     v-if="mouseOverTaskShow && activeTask === task._id && calOverdueDay(task) < 0 && calDay(activity.endDate) > calDay(new Date())"
                                 >
                                     <div>
@@ -226,15 +226,15 @@
                                 </span>
                             </div>
 
-                            <div 
-                                class="t-task-bar t-remain-progress popup" 
+                            <div
+                                class="t-task-bar t-remain-progress popup"
                                 v-if="calDay(task.endDate) > calDay(new Date())"
                                 v-on:mouseover="mouseOverTask(task._id)"
                                 v-on:mouseleave="mouseExitTask"
                                 v-bind:style="[calTotalDay(task) > 0] ? [{width: progressEnd(task.startDate, task.endDate)+'%', left: progressStart(task.startDate)+'50%', },borderRadius] : {width: calLaterEnd(task)+'%', left: calCurrentDay+'%'}"
                             >
-                                <span 
-                                    class="popuptext" id="myPopup" 
+                                <span
+                                    class="popuptext" id="myPopup"
                                     v-if="mouseOverTaskShow && activeTask === task._id && calOverdueDay(task) < 0 && calDay(activity.endDate) < calDay(new Date())"
                                 >
                                     <div>
@@ -256,9 +256,9 @@
                                     </div>
                                 </span>
                             </div>
-                            
+
                             <div class="t-current-date" v-bind:style="{left: calCurrentDay+'%'}">
-                                <!-- <span 
+                                <!-- <span
                                     class="popuptext" id="myPopup" v-if="mouseOverTaskShow && activeTask === task._id"
                                     v-bind:class="[overduePopupPos(task)] < 42 ? 't-task-overdue-lessDay' : '' && [calOverdueDay(task)] < 14 ? {left: '97%'} : {}"
                                 >{{new Date()}}</span> -->
@@ -319,8 +319,12 @@
                 days: null,
                 oneDay: 86400000,
                 modDate: new Date(),
+                //Object style
                 borderRadius: {
                     'border-radius': '15px'
+                },
+                stylePopup: {
+
                 }
             }
         },
@@ -399,7 +403,7 @@
                 return end - cur
             },
             OverdueActivityArray(index) {
-                this.activityOverDueStatus[index] = false 
+                this.activityOverDueStatus[index] = false
                 this.collapseShow[index] = false
             },
             OverdueActivity(task, activityIndex) {
@@ -419,7 +423,9 @@
                 this.activeTask = id
             },
             mouseExitTask() {
+                this.stylePopup = 'animation: fadeOut 0.5s'
                 this.mouseOverTaskShow = false
+
             },
             mouseOverActivity(id) {
                 this.mouseOverActivityShow = true
@@ -446,17 +452,17 @@
                     this.days += out[i] % 4 ? 365 : 366
                     this.months = this.months.concat(
                         [
-                            "Jan '" + out[i].toString().substr(-2), 
-                            "Feb '" + out[i].toString().substr(-2), 
-                            "Mar '" + out[i].toString().substr(-2), 
-                            "Apr '" + out[i].toString().substr(-2), 
-                            "May '" + out[i].toString().substr(-2), 
-                            "Jun '" + out[i].toString().substr(-2), 
-                            "Jul '" + out[i].toString().substr(-2), 
-                            "Aug '" + out[i].toString().substr(-2), 
-                            "Sep '" + out[i].toString().substr(-2), 
-                            "Oct '" + out[i].toString().substr(-2), 
-                            "Nov '" + out[i].toString().substr(-2), 
+                            "Jan '" + out[i].toString().substr(-2),
+                            "Feb '" + out[i].toString().substr(-2),
+                            "Mar '" + out[i].toString().substr(-2),
+                            "Apr '" + out[i].toString().substr(-2),
+                            "May '" + out[i].toString().substr(-2),
+                            "Jun '" + out[i].toString().substr(-2),
+                            "Jul '" + out[i].toString().substr(-2),
+                            "Aug '" + out[i].toString().substr(-2),
+                            "Sep '" + out[i].toString().substr(-2),
+                            "Oct '" + out[i].toString().substr(-2),
+                            "Nov '" + out[i].toString().substr(-2),
                             "Dec '" + out[i].toString().substr(-2)
                         ]
                     )
@@ -499,7 +505,7 @@
                     }
                 }
                 return new Date(y)
-            }
+            },
         }
     };
 </script>
@@ -559,6 +565,7 @@
         width: 100%;
         overflow-y: visible;
         border: $border-color solid .2px;
+        animation: fadeIn 1s;
 
         .t-head {
             display: flex;
@@ -568,7 +575,7 @@
             width: 100%;
             min-width: 230px;
             border: solid $border-color 1px;
-            animation: slideDown 1s;
+            animation: fadeIn 1s;
 
             .task-header {
                 border: solid $border-color 1px 0px 0px 1px;
@@ -620,6 +627,7 @@
         }
 
         .t-body {
+            animation: fadeIn 0.5s;
             .t-body-task-menu {
                 display: flex;
                 height: 30;
@@ -674,7 +682,7 @@
                 -ms-user-select: none;
                 user-select: none;
                 border-radius: 15px;
-            
+
                 .popuptext {
                     overflow: visible;
                     width: 160px;
@@ -789,7 +797,7 @@
         display: flex;
     }
     @-webkit-keyframes fadeIn {
-        from {opacity: 0;} 
+        from {opacity: 0;}
         to {opacity: 1;}
     }
 
@@ -804,7 +812,7 @@
     }
 
     @keyframes slideDown {
-        from {bottom: 200%}
-        to {bottom: 150%}
+        from {bottom: 200%; opacity: 0;}
+        to {bottom: 150%; opacity:1 ;}
     }
 </style>
