@@ -57,13 +57,11 @@
                             v-if="calOverdueDay(activity) > 0 && activityOverDueStatus[index]"
                             class="t-task-bar t-task-overdue popup" 
                             v-bind:style="{width: calTaskOverdueEnd(activity.startDate, activity.endDate)+'%', left: progressStart(activity.startDate)+'%' }"
-                            v-on:mouseover="mouseOverActivity(activity._id)"
+                            v-on:mouseover="mouseOverActivityShowOverdue(activity._id)"
                             v-on:mouseleave="mouseExitActivity"
                         >
                             <span class="popuptext" id="myPopup" 
-                                v-if="activeActivity === activity._id && mouseOverActivityShow"
-                                :style="[calOverdueDay(activity)] < 14 ? {left: '97%'} : {}"
-                                v-bind:class="[overduePopupPos(activity)] < 42 ? 't-task-overdue-lessDay' : ''"
+                                v-if="mouseOverActivityOverdue === activity._id && mouseOverActivityShow"
                             >
                                 overdue {{calOverdueDay(activity)}} days.
                             </span>
@@ -72,12 +70,11 @@
                         <div 
                             class="t-task-bar t-task-progress popup"
                             v-bind:style="{ width: progressEnd(activity.startDate, activity.endDate)+'%',left: progressStart(activity.startDate)+'%' }"
-                            v-on:mouseover="mouseOverActivity(activity._id)"
+                            v-on:mouseover="mouseOverActivityShowTotal(activity._id)"
                             v-on:mouseleave="mouseExitActivity"
                         >
                             <span class="popuptext" id="myPopup" 
-                                v-if="mouseOverActivityShow && activeActivity === activity._id"
-                                v-bind:style ="[calDay(activity.endDate) - calDay(activity.startDate) + calDay(new Date()) < 15] ? {} : {left: '-100%'}"
+                                v-if="mouseOverActivityTotal && activeActivity === activity._id"
                             >
                                 total {{calTotalDay(activity)}} days.
                             </span>
@@ -86,12 +83,12 @@
                         <div 
                             class="t-task-bar t-remain-progress popup" 
                             v-if="calDay(activity.endDate) > calDay(new Date())"
-                            v-on:mouseover="mouseOverActivity(activity._id)"
+                            v-on:mouseover="mouseOverActivityShowRemain(activity._id)"
                             v-on:mouseleave="mouseExitActivity"
                             v-bind:style="{width: calLaterEnd(activity)+'%', left: calCurrentDay+'%'}"
                         >
                             <span class="popuptext" id="myPopup" 
-                                v-if="mouseOverActivityShow && activeActivity === activity._id"
+                                v-if="mouseOverActivityRemain && activeActivity === activity._id"
                             >
                                 {{calDayRemain(activity.endDate)}} days remain.
                             </span>
@@ -123,58 +120,40 @@
                                 v-if="calOverdueDay(task) > 0 && !task.status"
                                 class="t-task-bar t-task-overdue popup" 
                                 v-bind:style="{width: calTaskOverdueEnd(task.startDate)+'%', left: progressStart(task.startDate)+'%'}"
-                                v-on:mouseover="mouseOverTask(task._id)"
+                                v-on:mouseover="mouseOverOverdue(task._id)"
                                 v-on:mouseleave="mouseExitTask"
                             >
-                                <span 
-                                    class="popuptext" id="myPopup" v-if="mouseOverTaskShow && activeTask === task._id"
-                                    v-bind:style="
-                                        [calOverdueDay(task)] < 14 ? 
-                                            [calDay(task.endDate) - calDay(new Date()) < 15] ? 
-                                                {left: '97%'} 
-                                                :
-                                                {left: '270%'} 
-                                            : 
-                                            {}
-                                        "
-                                    v-bind:class="[overduePopupPos(task)] < 42 ? 't-task-overdue-lessDay' : ''"
+                                <span class="popuptext" id="myPopup" v-if="mouseOverOverdueShow && activeTask === task._id"
                                 >overdue {{calOverdueDay(task)}} days.</span>
                             </div>
                             
                             <div 
                                 class="t-task-bar t-task-progress popup" 
                                 v-bind:style="[{width: progressEnd(task.startDate, task.endDate)+'%', left: progressStart(task.startDate)+'%'}]"
-                                v-on:mouseover="mouseOverTask(task._id)"
+                                v-on:mouseover="mouseOverTotal(task._id)"
                                 v-on:mouseleave="mouseExitTask"
                             >
                                 <span 
                                     class="popuptext" id="myPopup" 
-                                    v-if="mouseOverTaskShow && activeTask === task._id && calTotalDay(task) > 0"
-                                    v-bind:style="[calTotalDay(task) > 0] ? {left: '-250%'} : {left: '100%'}"
+                                    v-if="mouseOverTotalShow && activeTask === task._id && calTotalDay(task) > 0"
                                 >total {{calTotalDay(task)}} days.</span>
                             </div>
 
                             <div 
                                 class="t-task-bar t-remain-progress popup" 
                                 v-if="calDay(task.endDate) > calDay(new Date())"
-                                v-on:mouseover="mouseOverTask(task._id)"
+                                v-on:mouseover="mouseOverRemain(task._id)"
                                 v-on:mouseleave="mouseExitTask"
                                 v-bind:style="[calTotalDay(task) > 0] ? [{width: progressEnd(task.startDate, task.endDate)+'%', left: progressStart(task.startDate)+'50%', },borderRadius] : {width: calLaterEnd(task)+'%', left: calCurrentDay+'%'}"
                             >
                                 <span class="popuptext" id="myPopup" 
-                                    v-if="mouseOverTaskShow && activeTask === task._id"
-                                    v-bind:class="[overduePopupPos(task)] < 42 ? 't-task-overdue-lessDay' : '' && [calOverdueDay(task)] < 5 ? {left: '97%'} : {}"
-                                    v-bind:style="[calDay(task.startDate) - calDay(new Date()) < 0] ? {left: '50%'} : {}"
+                                    v-if="mouseOverRemainShow && activeTask === task._id"
                                 >
                                     {{calDayRemain(task.endDate)}} days remain.
                                 </span>
                             </div>
                             
                             <div class="t-current-date" v-bind:style="{left: calCurrentDay+'%'}">
-                                <!-- <span 
-                                    class="popuptext" id="myPopup" v-if="mouseOverTaskShow && activeTask === task._id"
-                                    v-bind:class="[overduePopupPos(task)] < 42 ? 't-task-overdue-lessDay' : '' && [calOverdueDay(task)] < 14 ? {left: '97%'} : {}"
-                                >{{new Date()}}</span> -->
                             </div>
                         </div>
                 </div>
@@ -215,7 +194,7 @@
                     this.company = res.data.organizeName
                 })
 
-            this.beforeMount()
+            this.getYears()
         },
         data() {
             return {
@@ -226,8 +205,12 @@
                 activeTask: null,
                 collapseShow: [],
                 Popupshow: false,
-                mouseOverTaskShow: false,
-                mouseOverActivityShow: false,
+                mouseOverTotalShow: false,
+                mouseOverOverdueShow: false,
+                mouseOverRemainShow: false,
+                mouseOverActivityTotal: false,
+                mouseOverActivityOverdue: false,
+                mouseOverActivityRemain: false,
                 activityOverDueStatus: [],
                 days: null,
                 oneDay: 86400000,
@@ -327,55 +310,144 @@
                 return end - start
                 console.log(y)
             },
-            mouseOverTask(id) {
-                this.mouseOverTaskShow = true
+            mouseOverTotal(id) {
+                this.mouseOverTotalShow = true
+                this.activeTask = id
+            },
+            mouseOverOverdue(id) {
+                this.mouseOverOverdueShow = true
+                this.activeTask = id
+            },
+            mouseOverRemain(id) {
+                this.mouseOverRemainShow = true
                 this.activeTask = id
             },
             mouseExitTask() {
-                this.mouseOverTaskShow = false
+                this.mouseOverTotalShow = false
+                this.mouseOverOverdueShow = false
+                this.mouseOverRemainShow = false
             },
-            mouseOverActivity(id) {
-                this.mouseOverActivityShow = true
+            mouseOverActivityShowTotal(id) {
+                this.mouseOverActivityTotal = true
+                this.activeActivity = id
+            },
+            mouseOverActivityShowOverdue(id) {
+                this.mouseOverActivityOverdue = true
+                this.activeActivity = id
+            },
+            mouseOverActivityShowRemain(id) {
+                this.mouseOverActivityRemain = true
                 this.activeActivity = id
             },
             mouseExitActivity() {
-                this.mouseOverActivityShow = false
+                this.mouseOverActivityTotal = false,
+                this.mouseOverActivityOverdue = false
+                this.mouseOverActivityRemain = false
             },
-            callDaysInYear(years) {
+            async callDaysInYear(years) {
+                var mTmp = [
+                    "Jan '", 
+                    "Feb '", 
+                    "Mar '", 
+                    "Apr '", 
+                    "May '", 
+                    "Jun '", 
+                    "Jul '", 
+                    "Aug '", 
+                    "Sep '", 
+                    "Oct '", 
+                    "Nov '",
+                    "Dec '",
+                ]
+                var mTmp2 = [
+                    "Jan '", 
+                    "Feb '", 
+                    "Mar '", 
+                    "Apr '", 
+                    "May '", 
+                    "Jun '", 
+                    "Jul '", 
+                    "Aug '", 
+                    "Sep '", 
+                    "Oct '", 
+                    "Nov '",
+                    "Dec '",
+                    "Jan '", 
+                    "Feb '", 
+                    "Mar '",
+                ]
                 var seen = []
                 var out = []
                 var len = years.length
                 var j = 0;
+
+                var seen2 = []
+                var out2 = []
+                var j2 = 0;
+
                 for(var i in years) {
-                    var item = years[i]
+                    var item = new Date(years[i]).getFullYear()
                     if(seen[item] !== 1) {
                         seen[item] = 1
                         out[j++] = item
                     }
                 }
+                for(var i in years) {
+                    var item = new Date(years[i]).getMonth()
+                    if(seen2[item] !== 1) {
+                        seen2[item] = 1
+                        out2[j2++] = item
+                    }
+                }
+                
                 out.sort()
-
+                out2.sort((a, b) => {
+                    return a - b
+                })
                 for(var i in out) {
                     this.days += out[i] % 4 ? 365 : 366
-                    this.months = this.months.concat(
-                        [
-                            "Jan '" + out[i].toString().substr(-2), 
-                            "Feb '" + out[i].toString().substr(-2), 
-                            "Mar '" + out[i].toString().substr(-2), 
-                            "Apr '" + out[i].toString().substr(-2), 
-                            "May '" + out[i].toString().substr(-2), 
-                            "Jun '" + out[i].toString().substr(-2), 
-                            "Jul '" + out[i].toString().substr(-2), 
-                            "Aug '" + out[i].toString().substr(-2), 
-                            "Sep '" + out[i].toString().substr(-2), 
-                            "Oct '" + out[i].toString().substr(-2), 
-                            "Nov '" + out[i].toString().substr(-2), 
-                            "Dec '" + out[i].toString().substr(-2)
-                        ]
-                    )
+                    var tmp = []
+                    if(out2[out2.length-1] > 8) {
+                        this.months = this.months.concat(
+                            [
+                                "Jan '" + out[i].toString().substring(2,4), 
+                                "Feb '" + out[i].toString().substring(2,4), 
+                                "Mar '" + out[i].toString().substring(2,4), 
+                                "Apr '" + out[i].toString().substring(2,4), 
+                                "May '" + out[i].toString().substring(2,4), 
+                                "Jun '" + out[i].toString().substring(2,4), 
+                                "Jul '" + out[i].toString().substring(2,4), 
+                                "Aug '" + out[i].toString().substring(2,4), 
+                                "Sep '" + out[i].toString().substring(2,4), 
+                                "Oct '" + out[i].toString().substring(2,4), 
+                                "Nov '" + out[i].toString().substring(2,4),
+                                "Dec '" + out[i].toString().substring(2,4),
+                                "Jan '" + (out[i] + 1).toString().substring(2,4), 
+                                "Feb '" + (out[i] + 1).toString().substring(2,4), 
+                                "Mar '" + (out[i] + 1).toString().substring(2,4),
+                            ])
+                        this.days += 91
+                    } else {
+                        this.months = this.months.concat(
+                            [
+                                "Jan '" + out[i].toString().substring(2,4), 
+                                "Feb '" + out[i].toString().substring(2,4), 
+                                "Mar '" + out[i].toString().substring(2,4), 
+                                "Apr '" + out[i].toString().substring(2,4), 
+                                "May '" + out[i].toString().substring(2,4), 
+                                "Jun '" + out[i].toString().substring(2,4), 
+                                "Jul '" + out[i].toString().substring(2,4), 
+                                "Aug '" + out[i].toString().substring(2,4), 
+                                "Sep '" + out[i].toString().substring(2,4), 
+                                "Oct '" + out[i].toString().substring(2,4), 
+                                "Nov '" + out[i].toString().substring(2,4),
+                                "Dec '" + out[i].toString().substring(2,4),
+                            ]
+                        )
+                    }
                 }
             },
-            beforeMount() {
+            getYears() {
                 var totalYear = []
                 var years = []
                 var updateDate = []
@@ -386,7 +458,7 @@
                     for(var index in this.tasks) {
                         if(this.tasks[index].activityId == this.activitys[i]._id) {
                             this.OverdueActivity(this.tasks[index], i)
-                            years[index] = new Date(this.tasks[index].endDate).getFullYear()
+                            years[index] = new Date(this.tasks[index].endDate)
                             updateDate[index] = new Date(this.tasks[index].updateDate)
                         }
                     }
@@ -419,14 +491,15 @@
 
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Raleway');
     $border-color: rgb(223, 223, 223);
-    $progress-bar: rgb(53, 207, 130);
-    $overdue-bar: rgb(252, 92, 92);
-    $currentdate: rgb(110, 173, 255);
-    $remainTask: rgb(209, 209, 209);
+    $progress-bar: #3FBA8A;
+    $overdue-bar: #AC1818;
+    $currentdate: #6D8DF3;
+    $remainTask: #E8E8E8;
 
     html, body {
+        animation: fadeIn 1.5s;
         margin: 0;
         display: block;
 
@@ -448,7 +521,7 @@
     }
 
     #app {
-        font-family: "Roboto", Helvetica, Arial, sans-serif;
+        font-family: "Raleway", Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         color: #19222c;
@@ -479,6 +552,7 @@
             width: 100%;
             min-width: 230px;
             border: solid $border-color 1px;
+            animation: slideDown 0.3s;
 
             .task-header {
                 border: solid $border-color 1px 0px 0px 1px;
@@ -537,13 +611,14 @@
             }
 
             .t-right-task-date {
+                animation: fadeIn 1s;
                 position: relative;
             }
         }
 
         .t-right-date {
             position: relative;
-
+            animation: slideDown 0.3s;
             .t-month {
                 width: 70px;
                 min-width: 59px;
@@ -564,15 +639,6 @@
                 height: 94%;
                 border: solid $currentdate 1px;
                 z-index: 0;
-
-                .popuptext {
-                    left: 10%;
-                    background-color: darken($progress-bar, 5);
-                }
-
-                .popuptext::after {
-                    left: 50%;
-                }
             }
 
             .popup {
@@ -595,8 +661,9 @@
                 padding: 8px 0;
                 position: absolute;
                 bottom: 125%;
-                left: 10%;
-                margin-left: -60px;
+                left: 50%;
+                margin-left: -67.5px;
+                animation: slideDown 0.2s;
             }
             //All TaskBar Base Style
             .t-task-bar {
@@ -611,20 +678,7 @@
 
                     //Progress Bar Popup
                     .popuptext {
-                        left: 0%;
-                        background-color: darken($progress-bar, 5);
-                    } border-color: darken($progress-bar, 5) transparent transparent transparent;
-                    
-
-                    //Style for Progress Bar with total < 42 day
-                    .t-task-progress-lessDay {
-                        background-color: darken($progress-bar, 5);
-                        left: -90%;
-                    }
-                    //Style for Progress Bar with total < 10 day
-                    .t-task-progress-lessDay {
-                        background-color: darken($progress-bar, 5);
-                        left: -90%;
+                        background-color: darken($progress-bar, 0);
                     }
                 }
                 &.t-task-coming {
@@ -632,9 +686,8 @@
 
                     //Progress Bar Popup
                     .popuptext {
-                        left: 0%;
-                        background-color: darken($progress-bar, 5);
-                    } border-color: darken($progress-bar, 5) transparent transparent transparent;
+                        background-color: darken($progress-bar, 0);
+                    }
                 }
                 //Overdue Bar Style *Red Bar
                 &.t-task-overdue {
@@ -642,15 +695,7 @@
 
                     //Overdue Bar Popup
                     .popuptext {
-                        left: 90%;
-                        background-color: darken($overdue-bar, 5);
-                    }
-
-                    //Style for Overdue Bar with total < 42 day
-                    .t-task-overdue-lessDay {
-                        background-color: darken($overdue-bar, 5);
-                        left: 120%;
-                        z-index: 100;
+                        background-color: darken($overdue-bar, 0);
                     }
                 }
                 //Remaining Bar Style *Grey Bar
@@ -660,14 +705,7 @@
 
                     //Remaining Bar Popup
                     .popuptext {
-                        left: 90%;
-                        background-color: darken($remainTask, 5);
-                    }
-
-                    //Style for Remaining Bar with total < 42 day
-                    .t-task-remain-lessDay {
-                        background-color: darken($overdue-bar, 5);
-                        left: 105%;
+                        background-color: darken($remainTask, 0);
                     }
                 }
             }
@@ -718,13 +756,8 @@
         to {opacity:1 ;}
     }
 
-    @keyframes fadeOut {
-        from {opacity: 1;}
-        to {opacity:0 ;}
-    }
-
     @keyframes slideDown {
-        from {top: 0%;}
-        to {top: 100%;}
+        from {opacity: 0; transform: translateY(-100%)}
+        to {opacity: 1; transform: translateY(0%)}
     }
 </style>
