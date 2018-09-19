@@ -29,20 +29,20 @@
                                 <div class="task-collapse collapse-symbol">
                                     <h3 
                                         v-if="collapseShow[index]"
-                                        style=" transform: translateY(-0%); 
-                                                -webkit-transform: translateY(-0%);
-                                                -moz-transform: translateY(-0%);
-                                                -o-transform: translateY(-0%);
-                                                -ms-transform: translateY(-0%);
+                                        style=" transform: translateY(-10%); 
+                                                -webkit-transform: translateY(-10%);
+                                                -moz-transform: translateY(-10%);
+                                                -o-transform: translateY(-10%);
+                                                -ms-transform: translateY(-10%);
                                                 font-size: 25px"
                                     >-</h3>
                                     <h3 
                                         v-else
-                                        style=" transform: translateY(-2%); 
-                                                -webkit-transform: translateY(-2%);
-                                                -moz-transform: translateY(-2%);
-                                                -o-transform: translateY(-2%);
-                                                -ms-transform: translateY(-2%);
+                                        style=" transform: translateY(3%); 
+                                                -webkit-transform: translateY(3%);
+                                                -moz-transform: translateY(3%);
+                                                -o-transform: translateY(3%);
+                                                -ms-transform: translateY(3%);
                                                 font-size: 18px"
                                     >+</h3>
                                 </div>
@@ -158,26 +158,27 @@
                         </div>
                 </div>
             </div>
-        </div>
-
-        <div class="footer flex-div">
+            <div class="footer flex-div">
             <div class="left-modifier flex-div">Last Update: {{new Date(modDate).getDate()}}/{{new Date(modDate).getMonth()+1}}/{{new Date(modDate).getFullYear()}}</div>
             <div class="right-comments flex-div">
                 <div class="flex-div comment-group">
                     <div class="color-cicle r-currentdate"></div>
-                    Today
-                </div>
-                <div class="flex-div comment-group">
-                    <div class="color-cicle r-progress"></div>
-                    Done
-                </div>
-                <div class="flex-div comment-group">
-                    <div class="color-cicle r-overdue"></div>
-                    Overdue
+                        Today
+                    </div>
+                    <div class="flex-div comment-group">
+                        <div class="color-cicle r-progress"></div>
+                        Done
+                    </div>
+                    <div class="flex-div comment-group">
+                        <div class="color-cicle r-overdue"></div>
+                        Overdue
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+        
 </template>
 
 <script>
@@ -217,7 +218,9 @@
                 modDate: new Date(),
                 borderRadius: {
                     'border-radius': '15px'
-                }
+                },
+                lastDay: null,
+                firstDay: null
             }
         },
         computed: {
@@ -235,18 +238,9 @@
         },
         methods: {
             calDay(task) {
-                var now = new Date(task)
-                var start = new Date(now.getFullYear(), 0, 0)
-                var diff = (now - start) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000)
-                var day = Math.floor(diff / this.oneDay)
-                if(now.getFullYear() > new Date().getFullYear()) {
-                    var i = now.getFullYear()
-                    var x = new Date().getFullYear()
-                    for(x; x < i; x++) {
-                        day += x % 4 ? 365 : 366
-                    }
-                }
-                return day
+                var now = this.$moment(task)
+                var day = now.diff(this.firstDay, 'days')
+                return parseInt(day)
             },
             showCollapseTask(id, index) {
                 this.$set(this.collapseShow, index, !this.collapseShow[index])
@@ -260,13 +254,13 @@
                 var day = this.calDay(taskEnd)
                 var startDate = this.progressStart(taskStart)
 
-                return (day /this.days * 100) - startDate
+                return (day / this.days * 100) - startDate
             },
             calTaskOverdueEnd(taskStart) {
                 var day = this.calDay(new Date())
                 var startDate = this.progressStart(taskStart)
 
-                return (day /this.days * 100) - startDate
+                return (day / this.days * 100) - startDate
             },
             calLaterEnd(task) {
                 var end = this.calDay(task.endDate)
@@ -345,106 +339,56 @@
                 this.mouseOverActivityRemain = false
             },
             async callDaysInYear(years) {
-                var mTmp = [
-                    "Jan '", 
-                    "Feb '", 
-                    "Mar '", 
-                    "Apr '", 
-                    "May '", 
-                    "Jun '", 
-                    "Jul '", 
-                    "Aug '", 
-                    "Sep '", 
-                    "Oct '", 
-                    "Nov '",
-                    "Dec '",
-                ]
-                var mTmp2 = [
-                    "Jan '", 
-                    "Feb '", 
-                    "Mar '", 
-                    "Apr '", 
-                    "May '", 
-                    "Jun '", 
-                    "Jul '", 
-                    "Aug '", 
-                    "Sep '", 
-                    "Oct '", 
-                    "Nov '",
-                    "Dec '",
-                    "Jan '", 
-                    "Feb '", 
-                    "Mar '",
-                ]
                 var seen = []
                 var out = []
                 var len = years.length
                 var j = 0;
 
-                var seen2 = []
-                var out2 = []
-                var j2 = 0;
-
                 for(var i in years) {
-                    var item = new Date(years[i]).getFullYear()
+                    var item = this.$moment(years[i]).format()
                     if(seen[item] !== 1) {
                         seen[item] = 1
                         out[j++] = item
                     }
                 }
-                for(var i in years) {
-                    var item = new Date(years[i]).getMonth()
-                    if(seen2[item] !== 1) {
-                        seen2[item] = 1
-                        out2[j2++] = item
-                    }
-                }
-                
+
                 out.sort()
-                out2.sort((a, b) => {
-                    return a - b
-                })
-                for(var i in out) {
-                    this.days += out[i] % 4 ? 365 : 366
-                    var tmp = []
-                    if(out2[out2.length-1] > 8) {
-                        this.months = this.months.concat(
-                            [
-                                "Jan '" + out[i].toString().substring(2,4), 
-                                "Feb '" + out[i].toString().substring(2,4), 
-                                "Mar '" + out[i].toString().substring(2,4), 
-                                "Apr '" + out[i].toString().substring(2,4), 
-                                "May '" + out[i].toString().substring(2,4), 
-                                "Jun '" + out[i].toString().substring(2,4), 
-                                "Jul '" + out[i].toString().substring(2,4), 
-                                "Aug '" + out[i].toString().substring(2,4), 
-                                "Sep '" + out[i].toString().substring(2,4), 
-                                "Oct '" + out[i].toString().substring(2,4), 
-                                "Nov '" + out[i].toString().substring(2,4),
-                                "Dec '" + out[i].toString().substring(2,4),
-                                "Jan '" + (out[i] + 1).toString().substring(2,4), 
-                                "Feb '" + (out[i] + 1).toString().substring(2,4), 
-                                "Mar '" + (out[i] + 1).toString().substring(2,4),
-                            ])
-                        this.days += 91
-                    } else {
-                        this.months = this.months.concat(
-                            [
-                                "Jan '" + out[i].toString().substring(2,4), 
-                                "Feb '" + out[i].toString().substring(2,4), 
-                                "Mar '" + out[i].toString().substring(2,4), 
-                                "Apr '" + out[i].toString().substring(2,4), 
-                                "May '" + out[i].toString().substring(2,4), 
-                                "Jun '" + out[i].toString().substring(2,4), 
-                                "Jul '" + out[i].toString().substring(2,4), 
-                                "Aug '" + out[i].toString().substring(2,4), 
-                                "Sep '" + out[i].toString().substring(2,4), 
-                                "Oct '" + out[i].toString().substring(2,4), 
-                                "Nov '" + out[i].toString().substring(2,4),
-                                "Dec '" + out[i].toString().substring(2,4),
-                            ]
-                        )
+
+                let diff1 = this.$moment([new Date(out[0]).getFullYear(), new Date(out[0]).getMonth(), 1], 'YYYY MM DD')
+                let diff2 = this.$moment([new Date(out[out.length-1]).getFullYear(), new Date(out[out.length-1]).getMonth(), 31], 'YYYY MM DD')
+                this.days = diff2.diff(diff1, 'days')
+                this.days += 30
+                this.lastDay = this.$moment([new Date(out[out.length-1]).getFullYear(), new Date(out[out.length-1]).getMonth(), 31])
+                this.firstDay = this.$moment([new Date(out[0]).getFullYear(), new Date(out[0]).getMonth(), 1])
+
+                let loop1 = this.$moment(out[0]).format('M')
+                let loop2 = this.$moment(out[out.length-1]).diff(diff1, 'months')+parseInt(loop1)
+                let mTmp = [
+                    "Jan '", 
+                    "Feb '", 
+                    "Mar '", 
+                    "Apr '", 
+                    "May '", 
+                    "Jun '", 
+                    "Jul '", 
+                    "Aug '", 
+                    "Sep '", 
+                    "Oct '", 
+                    "Nov '",
+                    "Dec '",
+                ]
+                var yearTmp = new Date(out[0]).getFullYear()
+                var i = parseInt(loop1)
+                var x = parseInt(loop2)
+                console.log(yearTmp)
+                for(i; i <= x; i++) {
+                    if(i == 12) {
+                        this.months = this.months.concat(mTmp[i - 1] + yearTmp.toString().substring(2,4))
+                        x -= i
+                        i = 1
+                        yearTmp += 1
                     }
+                    this.months = this.months.concat(mTmp[i - 1] + yearTmp.toString().substring(2,4))
                 }
             },
             getYears() {
@@ -458,7 +402,8 @@
                     for(var index in this.tasks) {
                         if(this.tasks[index].activityId == this.activitys[i]._id) {
                             this.OverdueActivity(this.tasks[index], i)
-                            years[index] = new Date(this.tasks[index].endDate)
+                            years.push(new Date(this.tasks[index].endDate))
+                            years.push(new Date(this.tasks[index].startDate))
                             updateDate[index] = new Date(this.tasks[index].updateDate)
                         }
                     }
@@ -492,7 +437,7 @@
 
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css?family=Raleway');
-    $border-color: rgb(223, 223, 223);
+    $border-color: rgb(240, 240, 240);
     $progress-bar: #3FBA8A;
     $overdue-bar: #AC1818;
     $currentdate: #6D8DF3;
@@ -525,7 +470,8 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         color: #19222c;
-        margin: 0 30px;
+        text-align: center;
+        display: block;
     }
 
     .page-head {
@@ -539,7 +485,8 @@
 
 
     .t-container {
-        width: 100%;
+        display: inline-block;
+        max-width: 100%;
         overflow-x: scroll;
         overflow-y: auto;
         border: $border-color solid .2px;
@@ -549,16 +496,16 @@
         }
 
         .t-left-task {
-            width: 100%;
-            min-width: 230px;
+            width: 320px;
             border: solid $border-color 1px;
             animation: slideDown 0.3s;
 
             .task-header {
                 border: solid $border-color 1px 0px 0px 1px;
+                width: 320px;
 
                 h1 {
-                    font-size: 25px;
+                    font-size: 22px;
                     vertical-align: middle;
                     line-height: 46px;
                     text-align: center;
@@ -566,15 +513,19 @@
             }
 
             &.activity-name {
+                font-size: 16px;
                 height: 35px;
+                width: 320px;
             }
 
             &.task-name {
+                font-size: 16px;
                 height: 35px;
+                width: 320px;
                 vertical-align: middle;
                 line-height: 35px;
-                text-indent: 2.5rem;
-                color: #637688;
+                text-indent: 4.5rem;
+                color: #546677;
             }
 
             .activity-group {
@@ -607,7 +558,6 @@
             .t-body-task-menu {
                 display: flex;
                 height: 30;
-                width: 100%;
             }
 
             .t-right-task-date {
@@ -620,7 +570,7 @@
             position: relative;
             animation: slideDown 0.3s;
             .t-month {
-                width: 70px;
+                width: 100px;
                 min-width: 59px;
                 max-width: 150px;
                 border: solid $border-color 1px;
@@ -664,12 +614,22 @@
                 left: 50%;
                 margin-left: -67.5px;
                 animation: slideDown 0.2s;
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    top: 95%;
+                    left: 50%;
+                    margin-left: -5px;
+                    border-width: 5px;
+                    border-style: solid;
+                }
             }
             //All TaskBar Base Style
             .t-task-bar {
                 position: absolute;
-                transform: translateY(27%);
-                height: 22px;
+                transform: translateY(50%);
+                height: 19px;
                 border-radius: 15px;
                 text-align: center;
                 //Progress Bar Style *Green Bar
@@ -679,6 +639,10 @@
                     //Progress Bar Popup
                     .popuptext {
                         background-color: darken($progress-bar, 0);
+
+                        &::after {
+                            border-color: $progress-bar transparent transparent transparent;
+                        }
                     }
                 }
                 &.t-task-coming {
@@ -687,6 +651,10 @@
                     //Progress Bar Popup
                     .popuptext {
                         background-color: darken($progress-bar, 0);
+
+                        &::after {
+                            border-color: $progress-bar transparent transparent transparent;
+                        }
                     }
                 }
                 //Overdue Bar Style *Red Bar
@@ -696,16 +664,23 @@
                     //Overdue Bar Popup
                     .popuptext {
                         background-color: darken($overdue-bar, 0);
+
+                        &::after {
+                            border-color: $overdue-bar transparent transparent transparent;
+                        }
                     }
                 }
                 //Remaining Bar Style *Grey Bar
                 &.t-remain-progress {
                     border-radius: 0 15px 15px 0;
                     background-color: $remainTask;
-
                     //Remaining Bar Popup
                     .popuptext {
                         background-color: darken($remainTask, 0);
+
+                        &::after {
+                            border-color: $remainTask transparent transparent transparent;
+                        }
                     }
                 }
             }
@@ -714,7 +689,7 @@
 
     .footer {
         position: relative;
-
+        width: 100%;
         .right-comments {
             position: absolute;
             right: 3vw;
