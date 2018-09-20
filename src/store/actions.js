@@ -40,7 +40,7 @@ export default {
         "endDate": "2018-10-15T00:00:00.000Z",
         "createDate": "2018-06-18T00:00:00.000Z",
         "createBy": "5b8b552a533d2c19e284ad1c",
-        "updateDate": "2018-09-15T00:00:00.000Z",
+        "updateDate": "2019-11-15T00:00:00.000Z",
         "updateBy": "5b8b5adb533d2c19e284ad20"
     },
     {
@@ -148,15 +148,15 @@ export default {
         "activityId": "5b8b5adb533d2c19e284ad20",
         "fundReq": true,
         "fundAmount": 2000.69,
-        "status": 1,
+        "status": 0,
         "docStatus": 0,
         "fundStatus": 0,
         "approveAmount": 1500,
         "approveRemark": "Test",
         "updateDate": "2018-09-15T00:00:00.000Z",
         "updateBy": "5b8b5adb533d2c19e284ad20",
-        "startProcessDate": "2018-08-15T00:00:00.000Z",
-        "finishProcessDate": "2018-08-20T00:00:00.000Z"
+        "startProcessDate": "2018-09-15T00:00:00.000Z",
+        "finishProcessDate": "2018-09-10T00:00:00.000Z"
     },
     {
         "name": "Plan 3",

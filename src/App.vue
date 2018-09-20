@@ -211,12 +211,12 @@
             <div class="left-modifier flex-div">Last Update: {{new Date(modDate).getDate()}}/{{new Date(modDate).getMonth()+1}}/{{new Date(modDate).getFullYear()}}</div>
             <div class="right-comments flex-div">
             <div class="flex-div comment-group">
+                <div class="color-cicle r-currentdate"></div>
+                    Today
+                </div>
                 <div class="flex-div comment-group">
                     <div class="color-cicle r-remain"></div>
                     Not Yet
-                </div>
-                <div class="color-cicle r-currentdate"></div>
-                    Today
                 </div>
                 <div class="flex-div comment-group">
                     <div class="color-cicle r-progress"></div>
@@ -470,6 +470,7 @@
                     this.OverdueActivityArray(i)
                         years.push(new Date(this.activitys[i].endDate))
                         years.push(new Date(this.activitys[i].startDate))
+                        updateDatetmp.push(new Date(this.activitys[i].updateDate))
                     for(var index in this.tasks) {
                         if(this.tasks[index].activityId == this.activitys[i]._id) {
                             this.OverdueActivity(this.tasks[index], i)
@@ -490,7 +491,7 @@
                 var out = []
                 var len = update.length
                 var j = 0;
-
+                console.log(update)
                 for(var i in update) {
                     var item = this.$moment(update[i]).format()
                     if(seen[item] !== 1) {
@@ -498,7 +499,9 @@
                         out[j++] = item
                     }
                 }
+                console.log(out)
                 out.sort()
+                console.log(out)
                 return out[out.length - 1]
             }
         }
@@ -777,7 +780,7 @@
             width: 10px;
             height: 10px;
             border-radius: 100%;
-            transform: translateY(56%);
+            transform: translateY(33%);
             margin: 0 .2rem;
 
             &.r-currentdate {
