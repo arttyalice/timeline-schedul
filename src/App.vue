@@ -192,16 +192,16 @@
             <div class="left-modifier flex-div">Last Update: {{new Date(modDate).getDate()}}/{{new Date(modDate).getMonth()+1}}/{{new Date(modDate).getFullYear()}}</div>
             <div class="right-comments flex-div">
             <div class="flex-div comment-group">
+                <div class="flex-div comment-group">
+                    <div class="color-cicle r-remain"></div>
+                    Not Yet
+                </div>
                 <div class="color-cicle r-currentdate"></div>
                     Today
                 </div>
                 <div class="flex-div comment-group">
                     <div class="color-cicle r-progress"></div>
-                    Done
-                </div>
-                <div class="flex-div comment-group">
-                <div class="color-cicle r-remain"></div>
-                    Remain
+                    Worked
                 </div>
                 <div class="flex-div comment-group">
                     <div class="color-cicle r-overdue"></div>
@@ -567,17 +567,19 @@
 
             &.activity-name {
                 font-size: 14px;
+                font-weight: bold;
                 height: 35px;
                 width: 320px;
             }
 
             &.task-name {
+                text-align: left;
                 font-size: 14px;
                 height: 35px;
                 width: 320px;
                 vertical-align: middle;
                 line-height: 35px;
-                text-indent: -1rem;
+                text-indent: 4.5rem;
                 color: #546677;
             }
 
@@ -663,10 +665,11 @@
                 border-radius: 6px;
                 padding: 8px 0;
                 position: absolute;
-                bottom: 125%;
+                bottom: 150%;
                 left: 50%;
                 margin-left: -67.5px;
                 animation: slideDown 0.2s;
+                z-index: 1;
 
                 &::after {
                     content: "";
