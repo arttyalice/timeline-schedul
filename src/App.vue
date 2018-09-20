@@ -131,8 +131,21 @@
 
                         <div class="t-right-date flex-div">
                             <div class="t-month" v-for="(month, index) in months" :key="index"></div>
+
+                            <!-- Overdue -->
                             <div
-                                v-if="calOverdueDay(task) > 0 && !task.status"
+                                v-if="calOverdueDay(task) > 0 && task.finishProcessDate != null"
+                                class="t-task-bar t-task-overdue popup" 
+                                v-bind:style="{width: progressEnd(task.startDate, task.finishProcessDate)+'%', left: progressStart(task.startDate)+'%'}"
+                                v-on:mouseover="mouseOverOverdue(task._id)"
+                                v-on:mouseleave="mouseExitTask"
+                            >
+                                <span class="popuptext" id="myPopup" v-if="mouseOverOverdueShow && activeTask === task._id"
+                                >Overdue {{calDay(task.finishProcessDate) - calDay(task.endDate)}} days.</span>
+                            </div>
+
+                            <div
+                                v-if="calOverdueDay(task) > 0 && task.finishProcessDate == null"
                                 class="t-task-bar t-task-overdue popup" 
                                 v-bind:style="{width: calTaskOverdueEnd(task.startDate)+'%', left: progressStart(task.startDate)+'%'}"
                                 v-on:mouseover="mouseOverOverdue(task._id)"
@@ -142,18 +155,24 @@
                                 >Overdue {{calOverdueDay(task)}} days.</span>
                             </div>
                             
+                            <!-- Worked -->
                             <div 
                                 class="t-task-bar t-task-progress popup" 
-                                v-bind:style="{width: progressEnd(task.startDate, task.endDate)+'%', left: progressStart(task.startDate)+'%'}"
+                                v-bind:style="[{width: progressEnd(task.startDate, task.endDate)+'%', left: progressStart(task.startDate)+'%'}, borderRadius]"
                                 v-on:mouseover="mouseOverTotal(task._id)"
                                 v-on:mouseleave="mouseExitTask"
                             >
                                 <span 
                                     class="popuptext" id="myPopup" 
-                                    v-if="mouseOverTotalShow && activeTask === task._id && calTotalDay(task) > 0"
+                                    v-if="mouseOverTotalShow && activeTask === task._id && calTotalDay(task) > 0 && task.finishProcessDate == null"
                                 >Worked {{calTotalDay(task)}} days.</span>
+                                <span 
+                                    class="popuptext" id="myPopup" 
+                                    v-if="mouseOverTotalShow && activeTask === task._id && calTotalDay(task) > 0 && task.finishProcessDate != null"
+                                >Worked {{calDay(task.finishProcessDate) - calDay(task.startDate)}} days.</span>
                             </div>
 
+                            <!-- Remain -->
                             <div 
                                 class="t-task-bar t-remain-progress popup" 
                                 v-if="calDay(task.endDate) > calDay(new Date()) && calTotalDay(task) < 0"
@@ -330,9 +349,7 @@
                 this.collapseShow[index] = false
             },
             OverdueActivity(task, activityIndex) {
-                console.log(task)
-                console.log(activityIndex)
-                if(task.status === 0) {
+                if(task.status == null) {
                     this.activityOverDueStatus[activityIndex] = true
                 }
             },

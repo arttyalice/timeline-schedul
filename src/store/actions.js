@@ -148,7 +148,7 @@ export default {
         "activityId": "5b8b5adb533d2c19e284ad20",
         "fundReq": true,
         "fundAmount": 2000.69,
-        "status": 0,
+        "status": 1,
         "docStatus": 0,
         "fundStatus": 0,
         "approveAmount": 1500,
