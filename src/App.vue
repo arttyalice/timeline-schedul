@@ -10,13 +10,13 @@
                 <div class="t-left-task">
                     <div class="task-header">
                         <h1>
-                            {{company}}
+                            {{capitalizeFirstLetter(company)}}
                         </h1>
                     </div>
                 </div>
                 <div class="t-right-date flex-div">
                     <div class="t-month" v-for="(month, index) in months" :key="index">
-                        <h2>{{month}}</h2>
+                        <h2>{{capitalizeFirstLetter(month)}}</h2>
                     </div>
                 </div>
             </div>
@@ -46,8 +46,8 @@
                                                 font-size: 18px"
                                     >+</h3>
                                 </div>
-                                <p v-if="taskHaveCollapse[index] === true" class="task-collapse">{{ activity.name }}</p>
-                                <p v-else class="task-collapse" v-bind:style="{margin: '0 0 0 44px'}">{{ activity.name }}</p>
+                                <p v-if="taskHaveCollapse[index] === true" class="task-collapse">{{ capitalizeFirstLetter(activity.name )}}</p>
+                                <p v-else class="task-collapse" v-bind:style="{margin: '0 0 0 44px'}">{{ capitalizeFirstLetter(activity.name) }}</p>
                             </div>
                         </div>
                     </div>
@@ -125,7 +125,7 @@
                 >
                     <div class="t-body-task-menu" >
                         <div class="t-left-task task-name">
-                                <p>{{task.name}}  (Planned {{calDay(task.endDate) - calDay(task.startDate) + 1}} days)</p>
+                                <p>{{capitalizeFirstLetter(task.name)}}  (Planned {{calDay(task.endDate) - calDay(task.startDate) + 1}} days)</p>
                         </div>
                     </div>
 
@@ -271,6 +271,9 @@
             }
         },
         methods: {
+            capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            },
             calDay(task) {
                 var now = this.$moment(task)
                 var day = now.diff(this.firstDay, 'days')
